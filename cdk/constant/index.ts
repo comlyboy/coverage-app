@@ -1,4 +1,4 @@
 export enum LambdaApplicationEnum {
-	STACK_NAME = 'workinance-api',
-	STACK_ID = 'WorkinanceApi'
+	STACK_NAME = 'coverage-api',
+	STACK_ID = 'CoverageApi'
 }
