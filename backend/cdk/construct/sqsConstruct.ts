@@ -1,9 +1,13 @@
-import { Queue } from 'aws-cdk-lib/aws-sqs';
+import { Queue, QueueProps } from 'aws-cdk-lib/aws-sqs';
 import { Construct } from 'constructs';
 
 import { IBaseConstructProps } from 'cdk/types';
+import { Function } from 'aws-cdk-lib/aws-lambda';
 
-export interface ISqsConstructProps extends IBaseConstructProps { }
+export interface ISqsConstructProps extends IBaseConstructProps<QueueProps> {
+	name: string;
+	lambdaFuntion: Function;
+}
 
 export class SqsConstruct extends Construct {
 	readonly queue: Queue;
@@ -12,8 +16,9 @@ export class SqsConstruct extends Construct {
 		super(scope, id);
 
 		this.queue = new Queue(this, `${props.stackId}Queue`, {
-
+			...props.options,
+			queueName: props.name
 		});
-
+		this.queue.grantConsumeMessages(props.lambdaFuntion);
 	}
 }

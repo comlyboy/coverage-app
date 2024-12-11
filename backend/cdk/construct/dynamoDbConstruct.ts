@@ -21,19 +21,6 @@ export class DynamoDBConstruct extends Construct {
 			partitionKey: { name: 'id', type: AttributeType.STRING },
 			sortKey: { name: 'entityName', type: AttributeType.STRING },
 		});
-
-		this.table.addGlobalSecondaryIndex({
-			indexName: 'email_entityName_index',
-			partitionKey: { name: 'email', type: AttributeType.STRING },
-			sortKey: { name: 'entityName', type: AttributeType.STRING },
-		});
-
-		this.table.addGlobalSecondaryIndex({
-			indexName: 'entityName_createdDate_index',
-			sortKey: { name: 'createdDate', type: AttributeType.STRING },
-			partitionKey: { name: 'entityName', type: AttributeType.STRING },
-		});
-
 		this.table.grantFullAccess(props.handlerFunction);
 	}
 }

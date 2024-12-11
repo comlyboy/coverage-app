@@ -1,28 +1,29 @@
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
-import { IBaseConstructProps } from 'cdk/types';
 
-export interface ILambdaConstructProps extends IBaseConstructProps {
-	bucket: s3.Bucket;
+import { IBaseConstructProps } from 'cdk/types';
+import { Architecture, Code, Function, FunctionProps, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+
+export interface ILambdaConstructProps extends IBaseConstructProps<FunctionProps> {
+	bucket: Bucket;
 }
 
 export class LambdaConstruct extends Construct {
-	readonly handler: lambda.Function;
+	readonly handler: Function;
 
 	constructor(scope: Construct, id: string, props: ILambdaConstructProps) {
 		super(scope, id);
 
-		this.handler = new lambda.Function(this, id, {
+		this.handler = new Function(this, id, {
 			functionName: props.stackName,
 			description: 'This is the Coverage API Lambda function',
 			handler: 'lambda.handler',
-			runtime: lambda.Runtime.NODEJS_20_X,
+			runtime: Runtime.NODEJS_20_X,
 			timeout: Duration.seconds(15),
 			memorySize: 1024,
-			architecture: lambda.Architecture.ARM_64,
-			code: lambda.Code.fromBucket(props.bucket, 'lambda-code.zip'),
+			architecture: Architecture.ARM_64,
+			code: Code.fromBucket(props.bucket, 'lambda-code.zip'),
 			environment: {
 				NODE_ENV: props.stage,
 				NODE_OPTIONS: '--enable-source-maps',
