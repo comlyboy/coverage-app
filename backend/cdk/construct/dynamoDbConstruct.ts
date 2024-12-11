@@ -14,7 +14,7 @@ export class DynamoDBConstruct extends Construct {
 	constructor(scope: Construct, id: string, props: IDynamoDBConstructProps) {
 		super(scope, id);
 
-		this.table = new Table(this, `${props.stackId}Database`, {
+		this.table = new Table(this, `${id}Database`, {
 			tableName: `${props.stackName}-db-${props.stage}`,
 			billingMode: BillingMode.PAY_PER_REQUEST,
 			deletionProtection: props.stage === 'production',

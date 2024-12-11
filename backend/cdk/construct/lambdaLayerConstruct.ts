@@ -13,7 +13,7 @@ export class SnsConstruct extends Construct {
 	constructor(scope: Construct, id: string, props: ISnsConstructProps) {
 		super(scope, id);
 
-		this.lambdaLayer = new LayerVersion(this, props.stackId + 'Layer', {
+		this.lambdaLayer = new LayerVersion(this, id + 'Layer', {
 			code: props.options.code || Code.fromAsset('node_modules'),
 			removalPolicy: RemovalPolicy.RETAIN,
 			compatibleArchitectures: [Architecture.ARM_64],

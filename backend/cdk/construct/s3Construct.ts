@@ -14,14 +14,14 @@ export class S3Construct extends Construct {
 	constructor(scope: Construct, id: string, props: IS3ConstructProps) {
 		super(scope, id);
 
-		this.bucket = new Bucket(this, `${props.stackId}Bucket`, {
+		this.bucket = new Bucket(this, `${id}Bucket`, {
 			versioned: true,
 			bucketName: props.stackName,
 			autoDeleteObjects: true,
 			removalPolicy: props.stage === 'production' ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
 		});
 
-		new BucketDeployment(this, `${props.stackId}DeployLambdaCode`, {
+		new BucketDeployment(this, `${id}DeployLambdaCode`, {
 			destinationBucket: this.bucket,
 			sources: [Source.asset('./dist')],
 			destinationKeyPrefix: props.stage,

@@ -1,19 +1,20 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import * as cdk from 'aws-cdk-lib';
+
+import { App } from 'aws-cdk-lib';
 
 import { LambdaApplicationEnum } from '../constant';
 import { CoverageApiStack } from '../lib/coverageApiStack';
 
-const app = new cdk.App();
+const app = new App();
 
-const stackId = LambdaApplicationEnum.STACK_ID + 'Staging'; // WorkinanceApiStaging
-const stackName = LambdaApplicationEnum.STACK_NAME + '-staging'; // workinance-api-staging
+const stackId = LambdaApplicationEnum.STACK_ID + 'Staging'; // CoverageApiStaging
+const stackName = LambdaApplicationEnum.STACK_NAME + '-staging'; // coverage-api-staging
 
 new CoverageApiStack(app, stackId, {
 	stage: 'development',
-	stackName,
 	stackId,
+	stackName,
 	env: { region: "us-east-1" },
 	tags: {
 		appName: LambdaApplicationEnum.STACK_NAME

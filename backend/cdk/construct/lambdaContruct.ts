@@ -18,12 +18,12 @@ export class LambdaConstruct extends Construct {
 		this.handler = new Function(this, id, {
 			functionName: props.stackName,
 			description: 'This is the Coverage API Lambda function',
-			handler: 'lambda.handler',
+			handler: 'serverless.handler',
 			runtime: Runtime.NODEJS_20_X,
 			timeout: Duration.seconds(15),
 			memorySize: 1024,
 			architecture: Architecture.ARM_64,
-			code: Code.fromBucket(props.bucket, 'lambda-code.zip'),
+			code: Code.fromAsset('dist'), // Point to the compiled dist folder
 			environment: {
 				NODE_ENV: props.stage,
 				NODE_OPTIONS: '--enable-source-maps',

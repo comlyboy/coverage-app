@@ -3,7 +3,7 @@ import { AttributeType } from "aws-cdk-lib/aws-dynamodb";
 
 import { ApiGatewayConstruct } from "cdk/construct/apiGatewayConstruct";
 import { DynamoDBConstruct } from "cdk/construct/dynamoDbConstruct";
-import { DynamoDbGsiConstruct } from "cdk/construct/dynamoGSIConstruct";
+import { DynamoDbGsiConstruct } from "cdk/construct/dynamoGsiConstruct";
 import { LambdaConstruct } from "cdk/construct/lambdaContruct";
 import { S3Construct } from "cdk/construct/s3Construct";
 import { IBaseConstructProps } from "cdk/types";

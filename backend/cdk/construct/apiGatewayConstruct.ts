@@ -19,7 +19,7 @@ export class ApiGatewayConstruct extends Construct {
 	constructor(scope: Construct, id: string, props: IApiGatewayConstructProps) {
 		super(scope, id);
 
-		this.api = new HttpApi(this, `${props.stackId}HttpApi`, {
+		this.api = new HttpApi(this, `${id}HttpApi`, {
 			apiName: props.stackName,
 			corsPreflight: {
 				allowHeaders: ['*'],

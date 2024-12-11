@@ -15,7 +15,7 @@ export class SqsConstruct extends Construct {
 	constructor(scope: Construct, id: string, props: ISqsConstructProps) {
 		super(scope, id);
 
-		this.queue = new Queue(this, `${props.stackId}Queue`, {
+		this.queue = new Queue(this, `${id}Queue`, {
 			...props.options,
 			queueName: props.name
 		});

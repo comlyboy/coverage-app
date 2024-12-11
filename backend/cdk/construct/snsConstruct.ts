@@ -15,7 +15,7 @@ export class SnsConstruct extends Construct {
 	constructor(scope: Construct, id: string, props: ISnsConstructProps) {
 		super(scope, id);
 
-		this.topic = new Topic(this, `${props.stackId}Topic`, {
+		this.topic = new Topic(this, `${id}Topic`, {
 			...props.options,
 			displayName: props.name
 		});
