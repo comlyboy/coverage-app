@@ -1,5 +1,3 @@
-// import * as path from 'path';
-
 import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -83,7 +81,7 @@ export class CoverageApiStack extends cdk.Stack {
 		// cloudwatch instantiation
 		new cloudWatch.LogGroup(this, props.stackId + 'LogGroup', {
 			logGroupName: props.stackName + '-log',
-			// removalPolicy: cdk.RemovalPolicy.DESTROY,
+			removalPolicy: cdk.RemovalPolicy.DESTROY,
 			retention: cloudWatch.RetentionDays.INFINITE
 		}).grantWrite(handlerFunction);
 
@@ -106,27 +104,21 @@ export class CoverageApiStack extends cdk.Stack {
 			partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
 			sortKey: { name: "entityName", type: dynamodb.AttributeType.STRING },
 		});
-		// dynamoTable.addGlobalSecondaryIndex({
-		// 	indexName: 'email_entityName_index',
-		// 	partitionKey: { name: 'email', type: dynamodb.AttributeType.STRING },
-		// 	sortKey: { name: 'entityName', type: dynamodb.AttributeType.STRING },
-		// });
 		dynamoTable.addGlobalSecondaryIndex({
-			indexName: 'entityName_createdAtDate_index',
+			indexName: 'email_entityName_index',
+			partitionKey: { name: 'email', type: dynamodb.AttributeType.STRING },
+			sortKey: { name: 'entityName', type: dynamodb.AttributeType.STRING },
+		});
+		dynamoTable.addGlobalSecondaryIndex({
+			indexName: 'entityName_createdDate_index',
 			partitionKey: { name: 'entityName', type: dynamodb.AttributeType.STRING },
-			sortKey: { name: 'createdAtDate', type: dynamodb.AttributeType.STRING },
-		});
-		dynamoTable.addGlobalSecondaryIndex({
-			indexName: 'entityNameBranch_createdAtDate_index',
-			partitionKey: { name: 'branchId', type: dynamodb.AttributeType.STRING },
-			sortKey: { name: 'createdAtDate', type: dynamodb.AttributeType.STRING },
-		});
-		dynamoTable.addGlobalSecondaryIndex({
-			indexName: 'entityNameBranchBusiness_createdAtDate_index',
-			partitionKey: { name: 'businessId', type: dynamodb.AttributeType.STRING },
-			sortKey: { name: 'createdAtDate', type: dynamodb.AttributeType.STRING },
+			sortKey: { name: 'createdDate', type: dynamodb.AttributeType.STRING },
 		});
 		dynamoTable.grantFullAccess(handlerFunction);
+
+		new cdk.CfnOutput(this, props.stackId + ' Output', {
+			value: apiGatewayEndpoint.apiEndpoint,
+		});
 
 	}
 }
