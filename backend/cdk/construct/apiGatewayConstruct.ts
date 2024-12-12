@@ -24,7 +24,7 @@ export class ApiGatewayConstruct extends Construct {
 			corsPreflight: {
 				allowHeaders: ['*'],
 				allowOrigins: ['*'],
-				allowMethods: [CorsHttpMethod.ANY],
+				allowMethods: [CorsHttpMethod.ANY]
 			},
 		});
 
@@ -32,7 +32,7 @@ export class ApiGatewayConstruct extends Construct {
 			path: '/{proxy+}',
 			methods: [HttpMethod.ANY],
 			integration: new HttpLambdaIntegration(
-				`${props.stackId}HttpApiIntegration`,
+				`${id}HttpApiIntegration`,
 				props.handlerFunction
 			),
 		});
