@@ -1,12 +1,13 @@
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
 
-import { IBaseConstructProps } from 'cdk/types';
 import { Architecture, Code, Function, FunctionProps, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
+
+import { IBaseConstructProps } from 'cdk/types';
+// import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 export interface ILambdaConstructProps extends IBaseConstructProps<FunctionProps> {
-	bucket: Bucket;
+	// bucket: Bucket;
 }
 
 export class LambdaConstruct extends Construct {
@@ -15,8 +16,7 @@ export class LambdaConstruct extends Construct {
 	constructor(scope: Construct, id: string, props: ILambdaConstructProps) {
 		super(scope, id);
 
-		this.handler = new Function(this, id, {
-			functionName: props.stackName,
+		this.handler = new Function(this, id + 'Lambda', {
 			description: 'This is the Coverage API Lambda function',
 			handler: 'serverless.handler',
 			runtime: Runtime.NODEJS_20_X,

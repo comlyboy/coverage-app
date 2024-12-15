@@ -5,7 +5,6 @@ import { ApiGatewayConstruct } from "../construct/apiGatewayConstruct";
 import { DynamoDbGsiConstruct } from "../construct/dynamoGsiConstruct";
 import { DynamoDBConstruct } from "../construct/dynamoDbConstruct";
 import { LambdaConstruct } from "../construct/lambdaContruct";
-import { S3Construct } from "../construct/s3Construct";
 import { IBaseConstructProps } from "../types";
 
 
@@ -16,20 +15,19 @@ export class CoverageApiStack extends Stack {
 		super(scope, id, props);
 
 		// S3 Setup
-		const s3Construct = new S3Construct(this, `${id}S3Construct`, {
-			bucketName: props.stackName,
-			stackId: props.stackId,
-			stage: props.stage,
-			stackName: props.stackName,
-		});
+		// const s3Construct = new S3Construct(this, `${id}S3Construct`, {
+		// 	bucketName: props.stackName,
+		// 	stackId: props.stackId,
+		// 	stage: props.stage,
+		// 	stackName: props.stackName,
+		// });
 
 
 		// Lambda Setup
 		const lambdaConstruct = new LambdaConstruct(this, `${id}LambdaConstruct`, {
-			bucket: s3Construct.bucket,
+			stage: props.stage,
 			stackId: props.stackId,
 			stackName: props.stackName,
-			stage: props.stage,
 		});
 
 
