@@ -1,5 +1,7 @@
+import { StageType } from "cdk/constant";
+
 export interface IBaseConstructProps<TOptions = {}> {
-	readonly stage?: 'development' | 'staging' | 'production';
+	readonly stage?: StageType;
 	readonly stackId?: string;
 	readonly stackName?: string;
 	readonly options?: TOptions;

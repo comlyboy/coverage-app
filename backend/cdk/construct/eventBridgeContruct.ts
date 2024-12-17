@@ -17,14 +17,14 @@ export class EventBridgeConstruct extends Construct {
 	constructor(scope: Construct, id: string, props: IEventBridgeConstructProps) {
 		super(scope, id);
 
-		this.eventSchedule = new Rule(this, id + 'Schedule', {
+		this.eventSchedule = new Rule(this, `${id}_Schedule`, {
 			ruleName: props.name,
 			schedule: Schedule.rate(Duration.minutes(1)),
 			targets: [
 				new LambdaFunction(props.lambdaFunction, {
 					event: RuleTargetInput.fromObject({ message: 'Hello from Lambda!!!' }),
-				}),
-			],
+				})
+			]
 		});
 		this.eventSchedule.applyRemovalPolicy(RemovalPolicy.DESTROY);
 

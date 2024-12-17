@@ -1,6 +1,6 @@
 import { Function } from 'aws-cdk-lib/aws-lambda';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
-import { AddRoutesOptions, CorsHttpMethod, HttpApi, HttpApiProps, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
+import { AddRoutesOptions, HttpApi, HttpApiProps } from 'aws-cdk-lib/aws-apigatewayv2';
 
 import { Construct } from 'constructs';
 
@@ -8,33 +8,27 @@ import { IBaseConstructProps } from 'cdk/types';
 
 export interface IApiGatewayConstructProps extends Omit<IBaseConstructProps<{
 	gatewayOptions: HttpApiProps;
-	routeOptions: AddRoutesOptions;
-}>, 'stage'> {
+	routeOptions: Partial<AddRoutesOptions>;
+}>, 'stage' | 'stackName'> {
 	handlerFunction: Function;
 }
 
-export class ApiGatewayConstruct extends Construct {
+
+export class ApiGatewayV2Construct extends Construct {
 	readonly api: HttpApi;
 
 	constructor(scope: Construct, id: string, props: IApiGatewayConstructProps) {
 		super(scope, id);
 
-		this.api = new HttpApi(this, `${id}HttpApi`, {
-			apiName: props.stackName,
-			corsPreflight: {
-				allowHeaders: ['*'],
-				allowOrigins: ['*'],
-				allowMethods: [CorsHttpMethod.ANY]
-			},
+		this.api = new HttpApi(this, `${id}_HttpApi`, {
+			...props.options.gatewayOptions
 		});
 
-		this.api.addRoutes({
-			path: '/{proxy+}',
-			methods: [HttpMethod.ANY],
-			integration: new HttpLambdaIntegration(
-				`${id}HttpApiIntegration`,
-				props.handlerFunction
-			),
-		});
+		if (props.options?.routeOptions) {
+			this.api.addRoutes({
+				...props.options?.routeOptions,
+				integration: new HttpLambdaIntegration(`${id}_HttpApiIntegration`, props.handlerFunction)
+			} as AddRoutesOptions);
+		}
 	}
 }

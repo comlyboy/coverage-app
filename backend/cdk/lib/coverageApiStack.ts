@@ -1,11 +1,12 @@
 import { App, CfnOutput, Stack, StackProps } from "aws-cdk-lib";
 import { AttributeType } from "aws-cdk-lib/aws-dynamodb";
 
-import { ApiGatewayConstruct } from "../construct/apiGatewayConstruct";
+import { ApiGatewayV2Construct } from "../construct/apiGatewayConstruct";
 import { DynamoDbGsiConstruct } from "../construct/dynamoGsiConstruct";
 import { DynamoDBConstruct } from "../construct/dynamoDbConstruct";
 import { LambdaConstruct } from "../construct/lambdaContruct";
 import { IBaseConstructProps } from "../types";
+import { CorsHttpMethod, HttpMethod } from "aws-cdk-lib/aws-apigatewayv2";
 
 
 export interface IProp extends StackProps, Omit<IBaseConstructProps, 'stackName'> { }
@@ -24,7 +25,7 @@ export class CoverageApiStack extends Stack {
 
 
 		// Lambda Setup
-		const lambdaConstruct = new LambdaConstruct(this, `${id}LambdaConstruct`, {
+		const lambdaConstruct = new LambdaConstruct(this, `${id}_LambdaConstruct`, {
 			stage: props.stage,
 			stackId: props.stackId,
 			stackName: props.stackName,
@@ -32,15 +33,28 @@ export class CoverageApiStack extends Stack {
 
 
 		// API Gateway Setup
-		const apiGatewayConstruct = new ApiGatewayConstruct(this, `${id}ApiGatewayConstruct`, {
+		const apiGatewayConstruct = new ApiGatewayV2Construct(this, `${id}_ApiGatewayConstruct`, {
 			handlerFunction: lambdaConstruct.handler,
 			stackId: props.stackId,
-			stackName: props.stackName,
+			options: {
+				gatewayOptions: {
+					apiName: props.stackName,
+					corsPreflight: {
+						allowHeaders: ['*'],
+						allowOrigins: ['*'],
+						allowMethods: [CorsHttpMethod.ANY]
+					},
+				},
+				routeOptions: {
+					path: '/{proxy+}',
+					methods: [HttpMethod.ANY],
+				}
+			}
 		});
 
 
 		// DynamoDB Setup
-		const dynamoDbTableConstruct = new DynamoDBConstruct(this, `${id}DynamoDBConstruct`, {
+		const dynamoDbTableConstruct = new DynamoDBConstruct(this, `${id}_DynamoDBConstruct`, {
 			stackId: props.stackId,
 			stackName: props.stackName,
 			stage: props.stage,
@@ -48,7 +62,7 @@ export class CoverageApiStack extends Stack {
 		});
 
 		// Dynamo-Db Global Secondary index setup
-		new DynamoDbGsiConstruct(this, `${id}DynamoDbGsiConstruct1`, {
+		new DynamoDbGsiConstruct(this, `${id}_DynamoDbGsiConstruct1`, {
 			table: dynamoDbTableConstruct.table,
 			options: {
 				indexName: 'entityName_createdAt_index',
@@ -57,7 +71,7 @@ export class CoverageApiStack extends Stack {
 			}
 		});
 
-		new DynamoDbGsiConstruct(this, `${id}DynamoDbGsiConstruct2`, {
+		new DynamoDbGsiConstruct(this, `${id}_DynamoDbGsiConstruct2`, {
 			table: dynamoDbTableConstruct.table,
 			options: {
 				indexName: 'email_entityName_index',
@@ -68,7 +82,7 @@ export class CoverageApiStack extends Stack {
 
 
 		// AWS CDK setup Outputs
-		new CfnOutput(this, `${id}CfnOutput`, {
+		new CfnOutput(this, `${id}_CfnOutput`, {
 			value: apiGatewayConstruct.api.apiEndpoint,
 		});
 	}

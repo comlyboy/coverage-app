@@ -1,0 +1,2 @@
+To synthesize lambda into to multiple regions and set specific environment for them
+cdk synth --context regions=us-west-2,us-east-2 --context stage=dev

@@ -16,7 +16,7 @@ export class LambdaConstruct extends Construct {
 	constructor(scope: Construct, id: string, props: ILambdaConstructProps) {
 		super(scope, id);
 
-		this.handler = new Function(this, id + 'Lambda', {
+		this.handler = new Function(this, `${id}_Lambda`, {
 			description: 'This is the Coverage API Lambda function',
 			handler: 'serverless.handler',
 			runtime: Runtime.NODEJS_20_X,

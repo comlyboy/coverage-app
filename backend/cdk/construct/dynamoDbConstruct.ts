@@ -14,10 +14,10 @@ export class DynamoDBConstruct extends Construct {
 	constructor(scope: Construct, id: string, props: IDynamoDBConstructProps) {
 		super(scope, id);
 
-		this.table = new Table(this, `${id}Database`, {
+		this.table = new Table(this, `${id}_DynamoDb`, {
 			tableName: `${props.stackName}-db-${props.stage}`,
 			billingMode: BillingMode.PAY_PER_REQUEST,
-			deletionProtection: props.stage === 'production',
+			deletionProtection: props.stage === 'prod',
 			partitionKey: { name: 'id', type: AttributeType.STRING },
 			sortKey: { name: 'entityName', type: AttributeType.STRING },
 		});
