@@ -20,14 +20,14 @@ export class ApiGatewayV2Construct extends Construct {
 	constructor(scope: Construct, id: string, props: IApiGatewayConstructProps) {
 		super(scope, id);
 
-		this.api = new HttpApi(this, `${id}_HttpApi`, {
+		this.api = new HttpApi(this, id, {
 			...props.options.gatewayOptions
 		});
 
 		if (props.options?.routeOptions) {
 			this.api.addRoutes({
 				...props.options?.routeOptions,
-				integration: new HttpLambdaIntegration(`${id}_HttpApiIntegration`, props.handlerFunction)
+				integration: new HttpLambdaIntegration('routes', props.handlerFunction)
 			} as AddRoutesOptions);
 		}
 	}

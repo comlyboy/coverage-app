@@ -17,7 +17,7 @@ export class EventBridgeConstruct extends Construct {
 	constructor(scope: Construct, id: string, props: IEventBridgeConstructProps) {
 		super(scope, id);
 
-		this.eventSchedule = new Rule(this, `${id}_Schedule`, {
+		this.eventSchedule = new Rule(this, id, {
 			ruleName: props.name,
 			schedule: Schedule.rate(Duration.minutes(1)),
 			targets: [

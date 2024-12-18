@@ -14,13 +14,12 @@ export class DynamoDBConstruct extends Construct {
 	constructor(scope: Construct, id: string, props: IDynamoDBConstructProps) {
 		super(scope, id);
 
-		this.table = new Table(this, `${id}_DynamoDb`, {
+		this.table = new Table(this, id, {
 			tableName: `${props.stackName}-db-${props.stage}`,
 			billingMode: BillingMode.PAY_PER_REQUEST,
 			deletionProtection: props.stage === 'prod',
 			partitionKey: { name: 'id', type: AttributeType.STRING },
 			sortKey: { name: 'entityName', type: AttributeType.STRING },
 		});
-		this.table.grantFullAccess(props.handlerFunction);
 	}
 }

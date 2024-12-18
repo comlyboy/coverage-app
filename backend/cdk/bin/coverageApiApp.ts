@@ -19,9 +19,8 @@ if (!stage || !regions.length) {
 }
 
 regions.forEach(region => {
-	new CoverageApiStack(app, `${LambdaApplicationEnum.STACK_ID}_${stage}_${region}`, {
+	new CoverageApiStack(app, `${LambdaApplicationEnum.STACK_NAME}_${stage}_${region}`, {
 		stage,
-		stackId: `${LambdaApplicationEnum.STACK_ID}_${stage}`,
 		stackName: `${LambdaApplicationEnum.STACK_NAME}-${stage}`,
 		env: { region },
 		tags: {

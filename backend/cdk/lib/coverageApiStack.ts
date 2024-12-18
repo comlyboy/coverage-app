@@ -1,12 +1,13 @@
 import { App, CfnOutput, Stack, StackProps } from "aws-cdk-lib";
 import { AttributeType } from "aws-cdk-lib/aws-dynamodb";
+import { CorsHttpMethod, HttpMethod } from "aws-cdk-lib/aws-apigatewayv2";
 
 import { ApiGatewayV2Construct } from "../construct/apiGatewayConstruct";
 import { DynamoDbGsiConstruct } from "../construct/dynamoGsiConstruct";
 import { DynamoDBConstruct } from "../construct/dynamoDbConstruct";
 import { LambdaConstruct } from "../construct/lambdaContruct";
 import { IBaseConstructProps } from "../types";
-import { CorsHttpMethod, HttpMethod } from "aws-cdk-lib/aws-apigatewayv2";
+import { CloudWatchLogGroupConstruct } from "../construct/cloudwatchConstruct";
 
 
 export interface IProp extends StackProps, Omit<IBaseConstructProps, 'stackName'> { }
@@ -15,27 +16,16 @@ export class CoverageApiStack extends Stack {
 	constructor(scope: App, id: string, props: IProp) {
 		super(scope, id, props);
 
-		// S3 Setup
-		// const s3Construct = new S3Construct(this, `${id}S3Construct`, {
-		// 	bucketName: props.stackName,
-		// 	stackId: props.stackId,
-		// 	stage: props.stage,
-		// 	stackName: props.stackName,
-		// });
-
-
 		// Lambda Setup
-		const lambdaConstruct = new LambdaConstruct(this, `${id}_LambdaConstruct`, {
+		const lambdaConstruct = new LambdaConstruct(this, 'lambda', {
 			stage: props.stage,
-			stackId: props.stackId,
 			stackName: props.stackName,
 		});
 
 
 		// API Gateway Setup
-		const apiGatewayConstruct = new ApiGatewayV2Construct(this, `${id}_ApiGatewayConstruct`, {
+		const apiGatewayConstruct = new ApiGatewayV2Construct(this, 'apiGatewayV2', {
 			handlerFunction: lambdaConstruct.handler,
-			stackId: props.stackId,
 			options: {
 				gatewayOptions: {
 					apiName: props.stackName,
@@ -53,16 +43,23 @@ export class CoverageApiStack extends Stack {
 		});
 
 
-		// DynamoDB Setup
-		const dynamoDbTableConstruct = new DynamoDBConstruct(this, `${id}_DynamoDBConstruct`, {
-			stackId: props.stackId,
+		// CLoudwatch Setup
+		const cloudwatchConstruct = new CloudWatchLogGroupConstruct(this, 'cloudWatch', {
+			name: props.stackName,
 			stackName: props.stackName,
+			stage: props.stage
+		});
+		cloudwatchConstruct.logGroup.grantWrite(lambdaConstruct.handler);
+
+		// DynamoDB Setup
+		const dynamoDbTableConstruct = new DynamoDBConstruct(this, 'dynamoDb', {
 			stage: props.stage,
+			stackName: props.stackName,
 			handlerFunction: lambdaConstruct.handler,
 		});
 
 		// Dynamo-Db Global Secondary index setup
-		new DynamoDbGsiConstruct(this, `${id}_DynamoDbGsiConstruct1`, {
+		new DynamoDbGsiConstruct(this, 'dynamoGsi1', {
 			table: dynamoDbTableConstruct.table,
 			options: {
 				indexName: 'entityName_createdAt_index',
@@ -71,7 +68,7 @@ export class CoverageApiStack extends Stack {
 			}
 		});
 
-		new DynamoDbGsiConstruct(this, `${id}_DynamoDbGsiConstruct2`, {
+		new DynamoDbGsiConstruct(this, 'dynamoGsi2', {
 			table: dynamoDbTableConstruct.table,
 			options: {
 				indexName: 'email_entityName_index',
@@ -80,9 +77,10 @@ export class CoverageApiStack extends Stack {
 			}
 		});
 
+		dynamoDbTableConstruct.table.grantFullAccess(lambdaConstruct.handler);
 
 		// AWS CDK setup Outputs
-		new CfnOutput(this, `${id}_CfnOutput`, {
+		new CfnOutput(this, 'cfnOutput', {
 			value: apiGatewayConstruct.api.apiEndpoint,
 		});
 	}
