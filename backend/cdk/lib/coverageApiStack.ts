@@ -19,16 +19,17 @@ export class CoverageApiStack extends Stack {
 	constructor(scope: App, id: string, props: IProp) {
 		super(scope, id, props);
 
-		// arn:aws:lambda:us-east-1:927440925921:layer:lambdaLayer53629B4C:1
+
 		// Lambda layer from ARN Setup
-		const existingLayer = LayerVersion.fromLayerVersionArn(this, 'lambdaLayer', 'arn:aws:lambda:us-east-1:927440925921:layer:lambdaLayer53629B4C:1');
+		const lambdaLayer = LayerVersion.fromLayerVersionArn(this, 'lambdaLayer', 'arn:aws:lambda:us-east-1:927440925921:layer:lambdaLayer53629B4C:1');
+
 
 		// Lambda Setup
 		const lambdaConstruct = new LambdaConstruct(this, 'lambda', {
 			stage: props.stage,
 			stackName: props.stackName,
 			options: {
-				layers: [existingLayer]
+				layers: [lambdaLayer]
 			}
 		});
 
@@ -59,7 +60,7 @@ export class CoverageApiStack extends Stack {
 			stackName: props.stackName,
 			stage: props.stage
 		});
-		cloudwatchConstruct.logGroup.grantWrite(lambdaConstruct.handler);
+
 
 		// DynamoDB Setup
 		const dynamoDbTableConstruct = new DynamoDBConstruct(this, 'dynamoDb', {
@@ -67,6 +68,7 @@ export class CoverageApiStack extends Stack {
 			stackName: props.stackName,
 			handlerFunction: lambdaConstruct.handler,
 		});
+
 
 		// Dynamo-Db Global Secondary index setup
 		new DynamoDbGsiConstruct(this, 'dynamoGsi1', {
@@ -87,7 +89,6 @@ export class CoverageApiStack extends Stack {
 			}
 		});
 
-		dynamoDbTableConstruct.table.grantFullAccess(lambdaConstruct.handler);
 
 		new RolePolicyConstruct(this, 'rolePolicy', {
 			options: {
@@ -120,6 +121,10 @@ export class CoverageApiStack extends Stack {
 				// }
 			]
 		});
+
+
+		cloudwatchConstruct.logGroup.grantWrite(lambdaConstruct.handler);
+		dynamoDbTableConstruct.table.grantFullAccess(lambdaConstruct.handler);
 
 
 		// AWS CDK setup Outputs
