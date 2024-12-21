@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 
-import { App } from 'aws-cdk-lib';
+import { App, DefaultStackSynthesizer } from 'aws-cdk-lib';
 
 import { LambdaApplicationEnum, StageType } from '../constant';
 import { CoverageApiStack } from '../lib/coverageApiStack';
@@ -28,6 +28,9 @@ regions.forEach(region => {
 		},
 		tags: {
 			appName: LambdaApplicationEnum.STACK_NAME
-		}
+		},
+		synthesizer: new DefaultStackSynthesizer({
+			fileAssetsBucketName: `${LambdaApplicationEnum.STACK_NAME}-${stage}`
+		}),
 	});
 });
